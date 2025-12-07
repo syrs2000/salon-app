@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -116,3 +116,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# 1. 収集したファイルを置く場所を指定（今回のエラーの原因）
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# 2. Render上でファイルを効率よく配信するための設定 (WhiteNoise)
+# これがないと、エラーが消えても画面のデザイン（CSS）が崩れます
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
