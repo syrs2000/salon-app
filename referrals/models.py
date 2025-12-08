@@ -21,6 +21,8 @@ class Partner(models.Model):
 
 class Customer(models.Model):
     name = models.CharField("お名前（ニックネーム可）", max_length=100)
+    phone_number = models.CharField("電話番号", max_length=20, blank=True, null=True)
+
     referred_by = models.ForeignKey(Partner, on_delete=models.SET_NULL, null=True, verbose_name="紹介元", related_name="customers")
     joined_at = models.DateTimeField("入会日時", auto_now_add=True)
     

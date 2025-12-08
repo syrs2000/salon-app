@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+
+{# ▼ タイトル設定 #}
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        エステ紹介アプリ 管理画面
+    </a>
+</h1>
+{% endblock %}
+
+{# ▼▼▼ ここがボタンを追加する場所です ▼▼▼ #}
+{% block nav-global %}
+<div style="float: right; margin-top: 8px; margin-right: 20px;">
+    
+    <a href="{% url 'dashboard_stats' %}" target="_blank" 
+       style="background-color: #28a745; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 14px;">
+       📊 月次レポート（ダッシュボード）
+    </a>
+
+</div>
+{% endblock %}

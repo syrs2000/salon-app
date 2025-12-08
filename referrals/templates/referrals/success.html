@@ -5,12 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登録完了</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* スマホで見やすいようにカードのデザインを調整 */
+        .membership-card {
+            border: 2px solid #d4af37; /* ゴールドっぽい枠線 */
+            border-radius: 15px;
+            overflow: hidden;
+        }
+    </style>
 </head>
-<body class="text-center py-5">
-    <div class="container">
-        <h1 class="display-4 text-success">登録完了！</h1>
-        <p class="lead">ご紹介ありがとうございます。<br>次回ご来店時にお待ちしております。</p>
-        <p class="text-muted">紹介元: {{ partner.name }}</p>
+<body class="bg-light">
+    <div class="container mt-5 mb-5">
+        
+        <div class="alert alert-danger text-center fw-bold" role="alert">
+            ⚠ ご注意ください<br>
+            この画面は一度しか表示されません。<br>
+            必ず<span style="font-size: 1.2em; text-decoration: underline;">スクリーンショット</span>を撮って<br>
+            保存してください。
+        </div>
+
+        <div class="card shadow-lg membership-card" style="max-width: 400px; margin: 0 auto;">
+            <div class="card-header bg-dark text-white text-center py-3">
+                <h5 class="mb-0" style="color: #d4af37;">★ MEMBER'S CARD ★</h5>
+            </div>
+            <div class="card-body text-center p-4 bg-white">
+                <p class="text-muted small mb-2">ご来店時にこの画面をご提示ください</p>
+                
+                <div class="py-3">
+                    <small class="text-muted d-block fw-bold">会員No.</small>
+                    <h1 class="display-1 fw-bold text-dark" style="letter-spacing: -2px;">{{ customer.id }}</h1>
+                </div>
+
+                <h3 class="mb-3 border-bottom pb-3">{{ customer.name }} 様</h3>
+                
+                {% if customer.phone_number %}
+                <p class="mb-1 text-muted">Tel: {{ customer.phone_number }}</p>
+                {% endif %}
+                
+                <div class="mt-4 p-2 rounded" style="background-color: #f8f9fa;">
+                    <small class="text-muted">紹介元パートナー</small><br>
+                    <strong>{{ partner.name }}</strong>
+                </div>
+            </div>
+            <div class="card-footer text-center bg-dark py-3">
+                <small class="text-white">発行日: {% now "Y/m/d" %}</small>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-outline-secondary btn-sm" onclick="alert('スクリーンショットはスマホの機能を使用してください（電源ボタンと音量ボタンなど）')">
+                📷 画面の保存方法がわからない方
+            </button>
+        </div>
     </div>
 </body>
 </html>

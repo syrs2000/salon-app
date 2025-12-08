@@ -20,7 +20,9 @@ def customer_signup(request, referral_code):
             customer = form.save(commit=False)
             customer.referred_by = partner
             customer.save()
-            return render(request, 'referrals/success.html', {'partner': partner})
+            return render(request, 'referrals/success.html', {
+                'partner': partner,
+                'customer' : customer,})
     else:
         form = CustomerForm()
 
@@ -53,20 +55,43 @@ def partner_qrcode(request, referral_code):
 # 3. 月次レポート（ダッシュボード）
 @login_required
 def dashboard_stats(request):
-    # 月ごとにグループ化し、紹介数と来店数を集計
+    # 1. URLからソート順を取得（デフォルトは「日付の新しい順」）
+    sort_param = request.GET.get('sort', '-month')
+
+    # 2. 並び替えルールの定義
+    # 左側がURLのパラメータ、右側がデータベースの項目名
+    sort_options = {
+        'month': 'month',                    # 対象月 (昇順 1月→12月)
+        '-month': '-month',                  # 対象月 (降順 12月→1月)
+        'salon': 'referred_by__salon__name', # 店舗名 (あいうえお順)
+        'partner': 'referred_by__name',      # 紹介元名 (あいうえお順)
+        'total': 'total_customers',          # 紹介人数 (少ない順)
+        '-total': '-total_customers',        # 紹介人数 (多い順)
+        'visited': 'visited_customers',      # 来店人数 (少ない順)
+        '-visited': '-visited_customers',    # 来店人数 (多い順)
+    }
+
+    # 指定されたソートが無効なら、デフォルト(-month)に戻す安全策
+    order_by_field = sort_options.get(sort_param, '-month')
+
+    # 3. データの集計と取得
     summary_data = (
         Customer.objects
+        # 入会日を「月」単位に丸める
         .annotate(month=TruncMonth('joined_at'))
+        # 「月」「紹介元」「店舗」の組み合わせでグループ化する
         .values('month', 'referred_by__name', 'referred_by__salon__name')
+        # 人数を数える
         .annotate(
-            total_customers=Count('id'),
-            # 来店済み（has_visited=True）のみカウント
-            visited_customers=Count('id', filter=Q(has_visited=True))
+            total_customers=Count('id'),                             # 紹介総数
+            visited_customers=Count('id', filter=Q(has_visited=True)) # 来店済みのみ
         )
-        .order_by('-month')
+        # ここで並び替えを適用
+        .order_by(order_by_field)
     )
 
     context = {
-        'summary_data': summary_data
+        'summary_data': summary_data,
+        'current_sort': sort_param,  # 画面側で「今の並び順」を知るために渡す
     }
     return render(request, 'referrals/dashboard.html', context)
