@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>月次レポート | 管理画面</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>📊 月次紹介レポート</h2>
+        <a href="/admin/" class="btn btn-outline-secondary">管理画面へ戻る</a>
+    </div>
+
+    <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>対象月</th>
+                        <th>店舗名</th>
+                        <th>紹介元パートナー</th>
+                        <th>紹介人数</th>
+                        <th>来店人数</th> <th>概算報酬額</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in summary_data %}
+                    <tr>
+                        <td>{{ row.month|date:"Y年n月" }}</td>
+                        <td>{{ row.referred_by__salon__name|default:"-" }}</td>
+                        <td>{{ row.referred_by__name|default:"(削除済み)" }}</td>
+                        
+                        <td class="fw-bold">{{ row.total_customers }}名</td>
+                        
+                        <td class="fw-bold text-success">{{ row.visited_customers }}名</td>
+                        
+                        <td>¥{% widthratio row.visited_customers 1 1000 %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">データがまだありません</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
