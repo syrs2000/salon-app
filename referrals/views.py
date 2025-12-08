@@ -9,6 +9,7 @@ from .models import Partner, Customer
 from .forms import CustomerForm
 import qrcode
 from io import BytesIO
+from .forms import PartnerLoginForm
 
 # 1. お客様登録画面
 def customer_signup(request, referral_code):
@@ -95,3 +96,58 @@ def dashboard_stats(request):
         'current_sort': sort_param,  # 画面側で「今の並び順」を知るために渡す
     }
     return render(request, 'referrals/dashboard.html', context)
+
+
+# 1. パートナーログイン
+def partner_login(request):
+    if request.method == 'POST':
+        form = PartnerLoginForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['referral_code']
+            phone = form.cleaned_data['phone_number']
+            
+            # 紹介コードと電話番号が一致するパートナーを探す
+            try:
+                partner = Partner.objects.get(referral_code=code, phone_number=phone)
+                # セッションにIDを保存（これでログイン状態にする）
+                request.session['partner_id'] = partner.id
+                return redirect('partner_dashboard')
+            except Partner.DoesNotExist:
+                form.add_error(None, "紹介コードまたは電話番号が間違っています")
+    else:
+        form = PartnerLoginForm()
+    
+    return render(request, 'referrals/partner_login.html', {'form': form})
+
+# 2. パートナー専用ダッシュボード
+def partner_dashboard(request):
+    # ログインチェック（セッションにIDがあるか？）
+    partner_id = request.session.get('partner_id')
+    if not partner_id:
+        return redirect('partner_login')
+    
+    partner = get_object_or_404(Partner, id=partner_id)
+    
+    # そのパートナーのデータだけを集計
+    summary_data = (
+        Customer.objects
+        .filter(referred_by=partner)  # ★ここが重要：自分の店の客だけにする
+        .annotate(month=TruncMonth('joined_at'))
+        .values('month')
+        .annotate(
+            total_customers=Count('id'),
+            visited_customers=Count('id', filter=Q(has_visited=True))
+        )
+        .order_by('-month')
+    )
+    
+    context = {
+        'partner': partner,
+        'summary_data': summary_data
+    }
+    return render(request, 'referrals/partner_dashboard.html', context)
+
+# 3. パートナーログアウト
+def partner_logout(request):
+    request.session.flush() # セッション削除
+    return redirect('partner_login')

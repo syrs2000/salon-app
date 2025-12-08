@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ partner.name }}様 実績レポート</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
+        <div>
+            <h5 class="m-0 text-secondary">パートナー実績管理</h5>
+            <h3 class="fw-bold m-0">{{ partner.name }} 様</h3>
+        </div>
+        <a href="{% url 'partner_logout' %}" class="btn btn-outline-danger btn-sm">ログアウト</a>
+    </div>
+
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body text-center bg-dark text-white rounded">
+            <h5 class="mb-3">あなたの紹介用QRコード</h5>
+            <p class="small text-white-50">このQRコードをお客様に読み取ってもらってください</p>
+            <div class="bg-white p-3 d-inline-block rounded">
+                <img src="{% url 'partner_qrcode' partner.referral_code %}" alt="QR Code" style="width: 150px;">
+            </div>
+            <p class="mt-2 mb-0 fw-bold font-monospace">{{ partner.referral_code }}</p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">月別 紹介実績</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>年月</th>
+                        <th class="text-center">紹介人数</th>
+                        <th class="text-center">来店人数</th>
+                        <th class="text-end">推定報酬</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in summary_data %}
+                    <tr>
+                        <td>{{ row.month|date:"Y年n月" }}</td>
+                        <td class="text-center fw-bold">{{ row.total_customers }}名</td>
+                        <td class="text-center fw-bold text-success">{{ row.visited_customers }}名</td>
+                        <td class="text-end">¥{% widthratio row.visited_customers 1 partner.reward_per_customer %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-4">
+                            まだ実績データがありません。
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
