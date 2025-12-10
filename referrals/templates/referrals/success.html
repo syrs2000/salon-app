@@ -12,6 +12,17 @@
             border-radius: 15px;
             overflow: hidden;
         }
+        /* 予約ボタンを目立たせるアニメーション */
+        .btn-reservation {
+            background: linear-gradient(45deg, #d4af37, #f0e68c);
+            color: #000;
+            border: none;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .btn-reservation:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -52,7 +63,17 @@
             </div>
         </div>
 
-        <div class="text-center mt-4">
+        <div class="d-grid gap-2 mt-4" style="max-width: 400px; margin: 0 auto;">
+            <a href="https://beauty.hotpepper.jp/CSP/kr/reserve/?storeId=H000778971" target="_blank" class="btn btn-reservation btn-lg shadow-sm py-3">
+                📅 Web予約はこちら<br>
+                ※お電話の予約も可能です<BR>
+                    0900000000
+            </a>
+            <p class="text-center text-muted small mt-1">
+                ※会員No.{{ customer.id }} をお控えの上ご予約ください
+            </p>
+        </div>
+        <div class="text-center mt-5">
             <button class="btn btn-outline-secondary btn-sm" onclick="alert('スクリーンショットはスマホの機能を使用してください（電源ボタンと音量ボタンなど）')">
                 📷 画面の保存方法がわからない方
             </button>
